@@ -6,7 +6,7 @@ export const accessToken = ref('')
 
 export const isAuthorized = ref(false);
 
-export function getAuthentication() : Authentication {
+export function getAuthentication(): Authentication {
     return {token: accessToken.value}
 }
 

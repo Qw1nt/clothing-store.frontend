@@ -2,16 +2,39 @@
 import Product from "~/scripts/data/product";
 import {ProductRequestGroup} from "~/scripts/requests-groups/product-request-group";
 import {getImage} from "~/scripts/http/http-configuration";
-import {isAuthorized, accessToken} from "~/scripts/authentication-storage";
-import Authentication from "~/scripts/http/authentication";
+import {isAuthorized, getAuthentication} from "~/scripts/authentication-storage";
 import {useUserStore} from "~/scripts/stores/user-store";
+import {email, helpers, minLength, required} from "@vuelidate/validators";
+import {useVuelidate} from "@vuelidate/core";
 
 const route = useRoute();
-const productRequest = new ProductRequestGroup()
+const productRequest = new ProductRequestGroup(getAuthentication());
 const product = ref({} as Product)
 const store = useUserStore();
+import {formatData} from "~/scripts/date-formatter"
 
 const createReviewDialogVisible = ref(false)
+
+const createReviewForm = reactive({
+    title: '',
+    content: ''
+})
+
+const requiredMessage = helpers.withMessage('Обязательное поле', required);
+const minLengthRu = helpers.withMessage('Минимальная длина - 10 символов', minLength(10))
+
+const rules = computed(() => {
+    return {
+        title: {
+            required: requiredMessage
+        },
+        content: {
+            required: requiredMessage,
+            minLength: minLengthRu
+        }
+    };
+});
+const v$ = useVuelidate(rules, createReviewForm);
 
 function addToCart() {
     if (isAuthorized.value == false) {
@@ -19,6 +42,36 @@ function addToCart() {
     } else {
         store.addProductToCart({productId: product.value.id, count: 1});
     }
+}
+
+async function createReview() {
+    await v$.value.$validate()
+    if (v$.value.$error) {
+        return
+    }
+
+    const response = await productRequest.createReview({
+            productId: product.value.id,
+            title: createReviewForm.title,
+            content: createReviewForm.content
+        },
+        x => {
+            if (product.value.reviews == undefined) {
+                product.value.reviews = []
+            }
+            createReviewDialogVisible.value = false;
+            product.value.reviews.push(x)
+        })
+
+    if (response.errors != null) {
+        ElNotification.error(response.errors);
+    }
+}
+
+function brakeCreationReview() {
+    createReviewForm.title = '';
+    createReviewForm.content = '';
+    createReviewDialogVisible.value = false;
 }
 
 onBeforeMount(async () => {
@@ -29,17 +82,30 @@ onBeforeMount(async () => {
 <template>
     <div>
         <el-dialog v-model="createReviewDialogVisible"
-                   title="Warning"
+                   title="Создание отзыва"
                    width="30%"
                    align-center>
-            <span>Content</span>
+
+            <el-input @change="v$.title.$touch()"
+                      v-model="createReviewForm.title"
+                      placeholder="Заголовок"/>
+            <span class="col-start-3 col-span-3 text-xs text-red-500"
+                  v-if="v$.title.$error">{{ v$.title.$errors[0].$message }}</span>
+
+            <el-input @change="v$.content.touch()"
+                      class="mt-1"
+                      v-model="createReviewForm.content"
+                      :autosize="{ minRows: 5, maxRows: 10 }"
+                      type="textarea"
+                      placeholder="Содержание"/>
+            <span class="col-start-3 col-span-3 text-xs text-red-500"
+                  v-if="v$.content.$error">{{ v$.content.$errors[0].$message }}</span>
+
             <template #footer>
-      <span class="dialog-footer">
-        <el-button @click="createReviewDialogVisible = false">Cancel</el-button>
-        <el-button type="primary" @click="createReviewDialogVisible = false">
-          Confirm
-        </el-button>
-      </span>
+                <span class="dialog-footer">
+                    <el-button @click="brakeCreationReview()">Отмена</el-button>
+                    <el-button type="primary" @click="createReview()">Создать</el-button>
+               </span>
             </template>
         </el-dialog>
 
@@ -107,9 +173,21 @@ onBeforeMount(async () => {
                 </div>
                 <el-divider/>
                 <div v-if="product.reviews != undefined && product.reviews.length > 0">
-                    <div v-for="review in product.reviews" class="mt-5 outline outline-1">
-                        <p>{{ review.title }}</p>
-                        <p class="mt-5">{{ review.content }}</p>
+                    <div v-for="review in product.reviews"
+                         class="">
+                        <p class="text-xl font-medium">{{ review.title }}</p>
+                        <p class="mt-3 text-lg">{{ review.content }}</p>
+
+                        <div class="grid grid-cols-12 mt-5">
+                            <p class="font-medium">Автор:</p>
+                            <p class="ml-3">{{review.owner.login}}</p>
+                            <div class="col-span-10"></div>             
+                            
+                            <p class="font-medium">Дата:</p>
+                            <p class="ml-3 col-span-2">{{formatData(review.date)}}</p>
+                            <div class="col-span-8"></div>
+                        </div>
+                        <el-divider></el-divider>
                     </div>
                 </div>
                 <page-header v-else header="На этот товар пока нет отзывов"></page-header>

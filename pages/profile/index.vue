@@ -5,46 +5,57 @@ import Grid from "~/components/grid.vue";
 import PageHeader from "~/components/page-header.vue";
 import User from "~/scripts/data/user";
 
-import dayjs from 'dayjs'
-import CustomParseFormat from 'dayjs/plugin/customParseFormat'
-import utcPlugin from 'dayjs/plugin/utc'
-import localizeFormat from 'dayjs/plugin/localizedFormat'
-import timezone from 'dayjs/plugin/timezone'
+import {formatData} from "~/scripts/date-formatter"
+import {OrderInHistory} from "~/scripts/data/order-in-history";
+import {UserRole} from "~/scripts/data/user-role";
 
-dayjs.extend(CustomParseFormat);
-dayjs.extend(utcPlugin);
-dayjs.extend(localizeFormat);
-dayjs.extend(timezone);
+interface Tab {
+    title: string;
+    key: string;
+    onClick: () => any;
+}
 
 const userRequests = new UserRequestGroup(getAuthentication());
 
-const activeTab = ref(0);
-const tabs = [
-    {title: 'Профиль', hover: 'hover:text-gray-500'},
-    {title: 'История заказов', hover: 'hover:text-gray-500'},
-    {title: 'Выйти', hover: 'hover:text-red-500'}
-]
+const activeTab = ref('profile');
+const tabs = ref([] as Tab[])
 const user = ref<User>({} as User);
-
-const formatDate = (date: Date) => {
-    return dayjs(date).utc(false).tz('Asia/Yekaterinburg').format('DD.MM.YYYY')
-}
-
-function switchTab(index: number) {
-    if (index == tabs.length - 1) {
-        logout();
-    } else {
-        activeTab.value = index;
-    }
-}
+const orders = ref([] as OrderInHistory[])
 
 function logout() {
     removeAccessToken();
     useRouter().push('/');
 }
 
+function switchTab(key: string){
+    activeTab.value = key;
+}
+
 onBeforeMount(async () => {
     await userRequests.getUserInfo(x => user.value = x);
+    await userRequests.getOrderHistory(x => orders.value = x);
+
+    if (user.value.role == UserRole.Admin) {
+        tabs.value.push({
+            title: "Админ-панель",
+            key: "admin-panel",
+            onClick: () => useRouter().push('/admin-panel')
+        });
+    }
+
+    //TODO add manager role
+    if (user.value.role == UserRole.Manager) {
+        tabs.value.push({
+            title: "Отчёты",
+            key: 'sample',
+            onClick: () => useRouter().push('/admin-panel')
+        });
+    }
+    
+    tabs.value.push({title: 'Профиль', key: 'profile', onClick: () => switchTab('profile')})
+    tabs.value.push({title: 'История заказов', key: 'history', onClick: () => switchTab('history')})
+    tabs.value.push({title: 'Выйти', key: 'logout', onClick: () => logout()})
+
 })
 </script>
 
@@ -52,30 +63,44 @@ onBeforeMount(async () => {
     <div v-if="user != {}">
         <page-header header="Личный кабинет"></page-header>
         <grid>
-            <div class="flex justify-center mb-10 mt-5">
-                <div class="grid grid-cols-3 gap-x-5 justify-items-center text-xl cursor-pointer">
-                    <div v-for="(tab, index) in tabs"
-                         @click="switchTab(index)"
+            <div class="flex justify-center mb-16 mt-5">
+                <div class="grid grid-cols-4 gap-x-5 justify-items-center text-xl cursor-pointer">
+                    <div v-for="tab in tabs"
+                         @click="tab.onClick()"
                          :class="{
-                        'text-blue-800' : activeTab == index,
-                        'border-b-2 border-blue-700' : activeTab == index,
-                        'text-gray-800' : activeTab != index}">{{ tab.title }}
+                        'text-blue-800' : activeTab == tab.key,
+                        'border-b-2 border-blue-700' : activeTab == tab.key,
+                        'text-gray-800' : activeTab != tab.key}">{{ tab.title }}
                     </div>
                 </div>
             </div>
-
-            <div v-if="activeTab == 0" class="w-1/2">
+            
+            <div v-if="activeTab == 'profile'" class="w-1/2">
                 <div class="grid grid-cols-8 gap-y-5">
-                    <p class="text-bold col-span-3 text-lg font-medium text-gray-700">Фамилия, Имя:</p>
-                    <p class="text-lg col-span-3">{{user.login}}</p>
-                    <p class="col-span-2"></p>    
-                    
-                    <p class="text-bold col-span-3 text-lg font-medium text-gray-700">Дата регистрации:</p>
-                    <p class="text-lg col-span-3">{{formatDate(user.registerDate)}}</p>
+                    <p class="text-bold col-span-3 text-lg font-medium text-gray-700">Логин:</p>
+                    <p class="text-lg col-span-3">{{ user.login }}</p>
                     <p class="col-span-2"></p>
+
+                    <!--
+                                        <p class="text-bold col-span-3 text-lg font-medium text-gray-700">Фамилия, Имя:</p>
+                                        <p class="text-lg col-span-3">{{user.firstSecondNames}}</p>
+                                        <p class="col-span-2"></p>    
+                    -->
+
+                    <p class="text-bold col-span-3 text-lg font-medium text-gray-700">Дата регистрации:</p>
+                    <p class="text-lg col-span-3">{{ formatData(user.registerDate) }}</p>
+                    <p class="col-span-2"></p>
+
+                    <div class="col-span-8 mt-10"/>
                 </div>
             </div>
-            <div v-if="activeTab == 1">
+            <div v-if="activeTab == 'history'">
+                <page-header v-if="orders.length == 0" header="Нет заказрв"></page-header>
+                <div v-else>
+                    <div v-for="order in orders">
+                        {{ order.items.length }}
+                    </div>
+                </div>
             </div>
         </grid>
     </div>

@@ -14,19 +14,26 @@ export const useUserStore = defineStore('user', {
         getProductsInCart: (state) => state.productsInCart,
     },
     actions: {
-        async syncWithLocalstorage(){
+        async syncWithLocalstorage() {
             const cartRequest = new CartRequestGroup(getAuthentication());
             await cartRequest.getCartProductsCount(x => this.productsInCart = x);
             new LocalUserCart().set(this.productsInCart);
         },
-        async addProductToCart(request: AddToCartRequest) {
-            const authentication: Authentication = {
-                token: accessToken.value
-            };
-            const cartRequests = new CartRequestGroup(authentication);
-
-            const response = await cartRequests.addToCart(request);
+        async removeItemFromCart(index: number, productId: number, onSuccess: (index: number) => any) {
+            const cartRequest = new CartRequestGroup(getAuthentication());
+            const response = await cartRequest.removeItem(productId);
             if (response.errors == null) {
+                onSuccess(index);
+                this.productsInCart--;
+            }
+        },
+        resetCartItems(){
+            this.productsInCart = 0;  
+        },
+        async addProductToCart(request: AddToCartRequest) {
+            const cartRequests = new CartRequestGroup(getAuthentication());
+            const response = await cartRequests.addToCart(request);
+            if (response.errors == null && response.data.count == 1) {
                 this.productsInCart++;
                 const localUserCart = new LocalUserCart();
                 localUserCart.add(1);

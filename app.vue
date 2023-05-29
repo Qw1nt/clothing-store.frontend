@@ -2,10 +2,12 @@
 import {productsInCartCount} from "~/scripts/stores/local-user-cart";
 import {accessToken, updateAuthorization} from "~/scripts/authentication-storage"
 import {useUserStore} from "~/scripts/stores/user-store";
+import {storeToRefs} from "pinia";
 
 const router = useRouter();
 const render = ref(false);
 const userStore = useUserStore()
+const {productsInCart} = storeToRefs(userStore);
 
 function routeTo(name: string) {
     router.push({name: name});
@@ -45,7 +47,7 @@ onBeforeMount(() => {
                             <p class="text-lg font-medium">ЛК</p>
                             <icon size="32" name="ph:user-circle"/>
                         </div>
-                        <el-badge :value="productsInCartCount" class="item">
+                        <el-badge :value="productsInCart" class="item">
                             <icon @click="router.push('/cart')" size="32" name="ic:outline-shopping-cart"
                                   class="ml-4 cursor-pointer text-gray-700 hover:text-gray-500"/>
                         </el-badge>

@@ -9,11 +9,14 @@ import {LocalUserCart} from "~/scripts/stores/local-user-cart";
 import {required, email, minLength, helpers} from '@vuelidate/validators';
 import {useVuelidate} from '@vuelidate/core';
 import {vMaska} from "maska"
+import {useUserStore} from "~/scripts/stores/user-store";
+import {UpdateProductPurchasedCount} from "~/scripts/data/update-product-purchased-count";
 
 const localUserCart = new LocalUserCart();
 const cartRequest = new CartRequestGroup(getAuthentication());
 const cartItems = ref([] as CartItem[]);
 
+const userStore = useUserStore();
 const orderInfo = reactive<CheckoutRequest>({} as CheckoutRequest);
 
 const resultPrice = computed(() => {
@@ -50,13 +53,7 @@ const rules = computed(() => {
 const v$ = useVuelidate(rules, orderInfo);
 
 async function removeItemFromCart(index: number) {
-    const response = await cartRequest.removeItem(cartItems.value[index].id);
-
-    if (response.errors == null) {
-        cartItems.value.splice(index, 1);
-    } else {
-        ElNotification.error(response.errors[0])
-    }
+    await userStore.removeItemFromCart(index, cartItems.value[index].id, removedIndex => cartItems.value.splice(index, 1));
 }
 
 async function checkout() {
@@ -67,20 +64,22 @@ async function checkout() {
 
     orderInfo.cartItems = cartItems.value;
     const response = await cartRequest.checkout(orderInfo);
-    console.log(response)
     if (response.errors != null) {
-        let errorMessage = '';
+        ElNotification.error(response.errors)
+        return;
+    } 
+    userStore.resetCartItems()
+    cartItems.value = [];
 
-        const keys = Object.keys(response.errors);
-        keys.forEach(key => {
-            errorMessage += `${response.errors![key]}\n\n`
-        })
+    const updateCountRequest = [] as UpdateProductPurchasedCount[]
+    orderInfo.cartItems.forEach(element => {
+        updateCountRequest.push({
+            productId: element.product.id,
+            count: element.count
+        });
+    })
 
-        ElNotification.error(errorMessage)
-    } else {
-        localUserCart.set(0);
-        cartItems.value = [];
-    }
+    await cartRequest.updatePurchasedCount(updateCountRequest);
 }
 
 onBeforeMount(async () => {

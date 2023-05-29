@@ -6,4 +6,5 @@ export default interface Review extends EntityBase {
     title: string;
     rating: number;
     content: string;
+    date: Date;
 }
