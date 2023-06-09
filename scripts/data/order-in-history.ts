@@ -2,4 +2,5 @@
 
 export interface OrderInHistory{
     items: CartItem[];
+    date: Date;
 }

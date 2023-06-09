@@ -114,7 +114,7 @@ onBeforeMount(async () => {
             <div class="col-span-2"/>
             <div class="col-span-5">
                 <div class="flex">
-                    <el-image :src="getImage(product.imageUrl)" alt="none"/>
+                    <img :src="getImage(product.imageUrl)" alt="none"/>
                     <div class="ml-10 min-w-[50%]">
                         <div class="text-xl">
                             {{ product.name }}
@@ -154,8 +154,8 @@ onBeforeMount(async () => {
                         <el-button @click="addToCart" class="w-1/2" size="large">Добавить в корзину</el-button>
 
                         <div class="outline outline-1 outline-offset-8 outline-gray-300 rounded-md h-1/2 mt-11">
-                            <p v-if="product.description != null" class="p-1">{{ product.description }}</p>
-                            <p v-else class="text-lg text-gray-500">Нет описания</p>
+                            <p v-if="product.description != null" class="p-1 w-full h-full">{{ product.description }}</p>
+                            <p v-else class="text-lg text-gray-500  w-full h-full">Нет описания</p>
                         </div>
                     </div>
                 </div>

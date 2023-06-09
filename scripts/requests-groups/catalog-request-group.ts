@@ -1,13 +1,18 @@
 ﻿import Product from "~/scripts/data/product";
 import RequestsBase from "~/scripts/requests-groups/requests-base";
+import Authentication from "~/scripts/http/authentication";
 
 export default class CatalogRequestGroup extends RequestsBase {
-    constructor() {
-        super("catalog");
+    constructor(authentication?: Authentication) {
+        super("catalog", authentication);
     }
 
     public async getAll(onSuccess: (x: Product[]) => any) {
         return await this.httpClient.get<Product[]>("", onSuccess);
+    }
+
+    public async getSorted(onSuccess: (x: Product[]) => any) {
+        return await this.httpClient.get<Product[]>("/sorted", onSuccess);
     }
 
     public async getNew(count: number, onSuccess: (result: Product[]) => any) {

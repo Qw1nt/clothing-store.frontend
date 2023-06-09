@@ -22,11 +22,11 @@ onBeforeMount(async () => {
 </script>
 
 <template>
-    <el-carousel height="550px">
+<!--    <el-carousel height="550px">
         <el-carousel-item v-for="item in carouselImages">
             <el-image :src="item"/>
         </el-carousel-item>
-    </el-carousel>
+    </el-carousel>-->
     <p class="flex w-full justify-center mt-20 font-bold text-gray-800 text-3xl">Новинки</p>
     <card-catalog tag="New" :data="topNews"></card-catalog>
     <p class="flex w-full justify-center mt-20 font-bold text-gray-800 text-3xl">Хиты Продаж</p>
