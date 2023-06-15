@@ -6,4 +6,5 @@ export default defineNuxtConfig({
         'nuxt-icon',
         '@pinia/nuxt',
     ],
+    ssr: false
 })
