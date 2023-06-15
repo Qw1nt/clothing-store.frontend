@@ -3,7 +3,7 @@ WORKDIR /app
 COPY package*.json ./
 RUN yarn install
 COPY . .
-RUN yarn build
+RUN npm run generate
 
 # этап production (production-stage)
 FROM nginx:stable-alpine as production-stage
