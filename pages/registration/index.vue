@@ -72,7 +72,7 @@ function endRegistration(){
     <page-header header="Авторизация"></page-header>
     <div class="grid grid-cols-2">
         <div class="flex justify-center">
-            <img class="aspect-auto	w-3/4 ml-5" src="identity-page.png"/>
+            <img class="aspect-auto	w-3/4 ml-5" src="~/assets/identity-page.png"/>
         </div>
         <div class="flex h-full items-center justify-center">
             <div class="w-1/2 rounded-xl p-5 py-8 bg-gradient-to-r from-cyan-500/5 to-blue-500/5">
