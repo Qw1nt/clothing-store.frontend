@@ -7,6 +7,7 @@ import {getAuthentication} from "~/scripts/authentication-storage";
 import {getImage} from "~/scripts/http/http-configuration";
 import {UploadFile} from "element-plus";
 import {EditProductRequest} from "~/scripts/request-models/edit-product-request";
+import HttpClient from "~/scripts/http/http-client";
 
 const productRequests = new ProductRequestGroup(getAuthentication());
 const product = ref<Product | null>()
@@ -26,8 +27,14 @@ function resetUploadedImage() {
 }
 
 async function resetChanges() {
-    product.value = null;
-    await productRequests.getProduct(useRoute().params.id as any, x => product.value = x);
+    await useRouter().push("/admin-panel");
+}
+
+async function deleteProduct(){
+    const client = new HttpClient("product", getAuthentication());
+    await client.delete(`${product.value?.id}`, async () => {
+        await useRouter().push("/admin-panel");
+    });
 }
 
 async function saveChanges() {
@@ -112,9 +119,9 @@ onBeforeMount(async () => {
                 <div class="mt-auto"></div>
 
                 <div class="flex justify-end">
-                    <el-button @click="resetChanges" type="danger" class=" mr-auto">Удалить</el-button>
-                    <el-button @click="resetChanges" >Отмена</el-button>
-                    <el-button @click="saveChanges" type="primary">Сохранить изменения</el-button>
+                    <el-button @click="deleteProduct()" type="danger" class=" mr-auto">Удалить</el-button>
+                    <el-button @click="resetChanges()" >Отмена</el-button>
+                    <el-button @click="saveChanges()" type="primary">Сохранить изменения</el-button>
                     
                     <div class="grid grid-cols-4">
                         <div></div>

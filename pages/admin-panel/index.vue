@@ -26,7 +26,8 @@ onBeforeMount(async () => {
         <page-header header="Админ-панель "></page-header>
         <grid>
             <div class="flex justify-end">
-                <el-button @click="useRouter().push('/admin-panel/add-new-product')" type="primary" size="large">
+                <el-button @click="useRouter().push('/admin-panel/add-new-product')"
+                           type="primary" size="large">
                     <icon class="mr-2" size="20" name="ep:circle-plus"/>
                     Добавить товар
                 </el-button>
