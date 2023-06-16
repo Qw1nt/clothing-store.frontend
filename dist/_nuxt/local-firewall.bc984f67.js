@@ -1,0 +1,1 @@
+import{k as n,Q as o}from"./entry.c85bd422.js";import{a as r}from"./user-request-group.f12863b2.js";async function f(s,t,e){await new r(n()).getUserInfo(async a=>{if(a.role!=s){if(e==null)return o("/login");e()}else await t()})}export{f as c};
