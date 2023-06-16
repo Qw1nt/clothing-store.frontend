@@ -23,7 +23,7 @@ export default class CatalogRequestGroup extends RequestsBase {
         return await this.httpClient.get<Product[]>("/bestsellers", onSuccess);
     }
 
-    public async getByCategory(categoryId: number, onSuccess: (x: Product[]) => any) {
-        return await this.httpClient.get<Product[]>(`/category/${categoryId}`, onSuccess);
+    public async getByCategory(categoryId: number, onSuccess: (x: Product[][]) => any) {
+        return await this.httpClient.get<Product[][]>(`category/${categoryId}`, onSuccess);
     }
 }

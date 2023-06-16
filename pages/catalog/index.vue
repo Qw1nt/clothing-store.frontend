@@ -3,6 +3,7 @@ import Product from "~/scripts/data/product";
 import Category from "~/scripts/data/category";
 import CatalogRequestGroup from "~/scripts/requests-groups/catalog-request-group";
 import {CategoryRequestGroup} from "~/scripts/requests-groups/category-request-group";
+import HttpClient from "~/scripts/http/http-client";
 
 const catalogRequest = new CatalogRequestGroup();
 const categoryRequest = new CategoryRequestGroup();
@@ -33,9 +34,10 @@ function selectProductInSearch(item: Product) {
 
 async function filterCatalogProducts(category: Category) {
     selectedCategory.value = category;
+    const endpoint = "catalog/category/" + category.id.toString()
 
     if (category.id != -1) {
-        await catalogRequest.getByCategory(category.id, x => catalogProducts.value = x);
+        await catalogRequest.getByCategory(category.id, x => catalogProducts.value = x[0]);
     } else {
         catalogProducts.value = allProducts.value;
     }
@@ -44,7 +46,7 @@ async function filterCatalogProducts(category: Category) {
 onBeforeMount(async () => {
     await catalogRequest.getAll(x => allProducts.value = x);
     catalogProducts.value = allProducts.value;
-    
+
     await categoryRequest.getAll(x => filteredCategories.value = x);
     filteredCategories.value.unshift({name: 'Все', id: -1});
     selectedCategory.value = filteredCategories.value[0];

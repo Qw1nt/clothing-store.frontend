@@ -11,20 +11,20 @@ export class ProductRequestGroup extends RequestsBase {
     }
 
     async getProduct(productId: number, onSuccess: (x: Product) => any) {
-        return await this.httpClient.get(`/${productId}`, onSuccess)
+        return await this.httpClient.get(`${productId}`, onSuccess)
     }
 
     async createReview(request: AddReviewForProduct, onSuccess: (x: Review) => any) {
-        return await this.httpClient.post("/review", request, onSuccess);
+        return await this.httpClient.post("review", request, onSuccess);
     }
     
     async update(productId: number, request: EditProductRequest){
-        return await this.httpClient.put(`/${productId}`, request);
+        return await this.httpClient.put(`${productId}`, request);
     }
     
     async updateImage(productId: number, image: File){
         const formData = new FormData();
         formData.append("image", image);
-        return await this.httpClient.put(`/image/${productId}`, formData);
+        return await this.httpClient.put(`image/${productId}`, formData);
     }
 }

@@ -76,7 +76,7 @@ async function successLogin(identityResponse: IdentityResponse){
                     <p class="text-sm">Нет аккаунта? <a class="text-sky-500 cursor-pointer hover:text-sky-300" @click="useRouter().push('/registration')">Зарегистрируйтесь!</a>
                     </p>
                 </div>
-                <el-button @click="tryLogin" class="w-full mt-14 mb-5" type="primary">Войти</el-button>
+                <el-button @click="tryLogin()" class="w-full mt-14 mb-5" type="primary">Войти</el-button>
             </div>
         </div>
     </div>

@@ -6,12 +6,12 @@ import {HttpResponse} from "~/scripts/http/response";
 import HttpRequestErrorHandlerBase from "~/scripts/http/http-request-error-handler-base";
 
 export default class HttpClient {
-    private readonly _endpointGroupName: string
+    private readonly _endpointGroupName?: string
     private readonly _authentication?: Authentication;
     private readonly _defaultErrorHandlers = new Map<number, HttpRequestErrorHandlerBase>();
 
-    constructor(endpointGroupName: string, authentication?: Authentication, errorHandlers?: HttpRequestErrorHandlerBase[]) {
-        this._endpointGroupName = endpointGroupName;
+    constructor(endpointGroupName?: string, authentication?: Authentication, errorHandlers?: HttpRequestErrorHandlerBase[]) {
+        this._endpointGroupName = endpointGroupName!;
         this._authentication = authentication;
         errorHandlers?.forEach(handler => {
             this._defaultErrorHandlers.set(handler.statusCode, handler);
@@ -31,7 +31,6 @@ export default class HttpClient {
     async put<TRequest, TResponse>(endpoint: string, payload: TResponse, onSuccess?: (responseData: TResponse) => any, errorHandlers?: HttpRequestErrorHandlerBase[]): Promise<HttpResponse<TResponse>> {
 
         const request = () => axios.put<TResponse>(endpoint, payload, this.#createRequestOptions(HttpRequestMethods.PUT));
-        console.log('PUTsd')
         return await this.#sendRequest(request, onSuccess, errorHandlers);
     }
 
@@ -92,7 +91,7 @@ export default class HttpClient {
             headers: {
                 Authorization: `Bearer ${this._authentication?.token}`
             },
-            baseURL: `${domain}/${this._endpointGroupName}`
+            baseURL: `${domain}${this._endpointGroupName}` 
         }
     }
 }

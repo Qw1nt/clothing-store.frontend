@@ -114,7 +114,7 @@ onBeforeMount(async () => {
             <div class="col-span-2"/>
             <div class="col-span-5">
                 <div class="flex">
-                    <img :src="getImage(product.imageUrl)" alt="none"/>
+                    <img :src="getImage(product.imageUrl)" alt="none" width="312"/>
                     <div class="ml-10 min-w-[50%]">
                         <div class="text-xl">
                             {{ product.name }}

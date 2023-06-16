@@ -12,7 +12,7 @@ export class CartRequestGroup extends RequestsBase {
     }
 
     async getCartProductsCount(onSuccess: (x: number) => any) {
-        return await this.httpClient.get<number>("/count", onSuccess);
+        return await this.httpClient.get<number>("count", onSuccess);
     }
 
     async getItems(onSuccess: (x: CartItem[]) => any) {
