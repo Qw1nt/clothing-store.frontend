@@ -1,1 +1,0 @@
-import{j as o,o as r,h as c,q as s,a6 as t}from"./entry.c85bd422.js";const n={},d={class:"grid grid-flow-row-dense grid-cols-6 grid-rows-1"},a=s("div",null,null,-1),l={class:"col-span-4"};function i(e,_){return r(),c("div",d,[a,s("div",l,[t(e.$slots,"default")])])}const h=o(n,[["render",i]]);export{h as G};

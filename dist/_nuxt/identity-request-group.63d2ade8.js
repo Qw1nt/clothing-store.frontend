@@ -1,1 +1,0 @@
-import{R as s}from"./entry.c85bd422.js";const n=""+new URL("identity-page.ae7f1a79.png",import.meta.url).href;class a extends s{constructor(){super("identity")}async login(t,e){return await this.httpClient.post("/login",t,e)}async register(t,e){return await this.httpClient.post("/register",t,e)}}export{a as I,n as _};

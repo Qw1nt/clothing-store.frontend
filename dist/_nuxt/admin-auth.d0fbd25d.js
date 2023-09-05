@@ -1,1 +1,0 @@
-import{ai as o,k as r,aj as n,Q as i}from"./entry.c85bd422.js";import{a as u,U as m}from"./user-request-group.f12863b2.js";const p=o(async(f,c)=>{let e,t;const a=new u(r());[e,t]=n(()=>a.getUserInfo(s=>{if(s.role!=m.Admin)return i("/login")})),e=await e,t()});export{p as default};
