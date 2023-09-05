@@ -31,15 +31,6 @@
 ### Админ-панель
 
 ![App Screenshot](https://github.com/Qw1nt/clothing-store.frontend/blob/screenshots/screenshots/4.jpg?raw=true)
-
-#### Добавление товара
-
 ![App Screenshot](https://github.com/Qw1nt/clothing-store.frontend/blob/screenshots/screenshots/9.jpg?raw=true)
-
-#### Редактирование товара
-
 ![App Screenshot](https://github.com/Qw1nt/clothing-store.frontend/blob/screenshots/screenshots/5.jpg?raw=true)
-
-#### Формирование отчёта
-
 ![App Screenshot](https://github.com/Qw1nt/clothing-store.frontend/blob/screenshots/screenshots/11.jpg?raw=true)
